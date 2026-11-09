@@ -1,0 +1,8 @@
+2026-01-15 10:30:00 INFO starting worker 3
+Authorization: Bearer sk-example-secret
+Email: alice@example.com
+token=abc123
+retry_token=abc123
+2026-01-15 10:30:02 ERROR dial tcp db-01.prod.internal:5432: connection refused
+db_password = "not-a-real-password"
+2026-01-15 10:30:03 INFO retrying in 5s

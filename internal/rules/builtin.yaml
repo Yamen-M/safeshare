@@ -1,0 +1,100 @@
+# Built-in SafeShare rules. Custom rule files use exactly this format.
+# Regular expressions use Go (RE2) syntax, which cannot backtrack catastrophically.
+# If a regex has a capture group, only the first group is treated as the value.
+rules:
+  - name: private-key
+    category: private_key
+    confidence: high
+    # Falls back to "everything key-like after the header" when the END line is missing.
+    regex: '-----BEGIN [A-Z ]*PRIVATE KEY-----(?:[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----|[A-Za-z0-9+/=\s]*)'
+
+  - name: jwt
+    category: token
+    confidence: high
+    regex: '\beyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}'
+
+  - name: aws-access-key-id
+    category: token
+    confidence: high
+    regex: '\b(?:AKIA|ASIA)[0-9A-Z]{16}\b'
+
+  - name: aws-secret-access-key
+    category: token
+    confidence: high
+    regex: '(?i)aws_?secret_?access_?key["'']?\s*[:=]\s*["'']?([A-Za-z0-9/+=]{40})'
+
+  - name: gcp-api-key
+    category: token
+    confidence: high
+    regex: '\bAIza[0-9A-Za-z_-]{35}'
+
+  - name: azure-storage-key
+    category: token
+    confidence: high
+    regex: '(?i)AccountKey=([A-Za-z0-9+/=]{40,})'
+
+  - name: github-token
+    category: token
+    confidence: high
+    regex: '\b(?:gh[pousr]_[A-Za-z0-9]{36,}|github_pat_[A-Za-z0-9_]{40,})'
+
+  - name: gitlab-token
+    category: token
+    confidence: high
+    regex: '\bglpat-[A-Za-z0-9_-]{20,}'
+
+  - name: slack-token
+    category: token
+    confidence: high
+    regex: '\bxox[abprs]-[A-Za-z0-9-]{10,}'
+
+  - name: stripe-key
+    category: token
+    confidence: high
+    regex: '\b(?:sk|rk|pk)_(?:live|test)_[A-Za-z0-9]{16,}'
+
+  - name: openai-style-key
+    category: token
+    confidence: high
+    regex: '\bsk-[A-Za-z0-9_-]{20,}'
+
+  - name: url-credentials
+    category: connection_string
+    confidence: high
+    # Any scheme://user:password@host URL, which covers database connection strings.
+    regex: '\b[A-Za-z][A-Za-z0-9+.-]*://[^\s"''<>/:@]+:[^\s"''<>@]+@[^\s"''<>]+'
+
+  - name: bearer-token
+    category: token
+    confidence: medium
+    regex: '(?i)\bbearer\s+([A-Za-z0-9._~+/=-]{8,})'
+
+  - name: token-assignment
+    category: token
+    confidence: medium
+    regex: '(?i)\b[\w.-]*(?:token|secret|api[_-]?key|access[_-]?key|private[_-]?key)[\w.-]*["'']?\s*[:=]\s*["'']?([^\s"'',;]{4,})'
+
+  - name: password-assignment
+    category: password
+    confidence: medium
+    regex: '(?i)\b[\w.-]*(?:password|passwd|pwd)[\w.-]*["'']?\s*[:=]\s*["'']?([^\s"'',;]{4,})'
+
+  - name: email
+    category: email
+    confidence: medium
+    regex: '[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,}'
+
+  - name: phone
+    category: phone
+    confidence: medium
+    regex: '(?:\+\d{1,3}[ .-]?\(?\d{1,4}\)?(?:[ .-]?\d{2,4}){2,4}|\(?\b\d{3}\)?[ .-]\d{3}[ .-]\d{4})\b'
+
+  - name: ipv4
+    category: ip
+    confidence: medium
+    regex: '\b(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\b'
+
+  - name: internal-hostname
+    category: hostname
+    confidence: medium
+    regex: '(?i)\b(?:[a-z0-9-]+\.)+(?:internal|local|corp|lan|intranet)\b'
